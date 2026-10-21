@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gabinete do Prefeito - Prefeitura Municipal</title>
+  
+  <style>
+    /* Reset e Variáveis de Cores */
+    :root {
+      --primary-color: #0d3b66;     /* Azul Institucional */
+      --secondary-color: #f4d35e;   /* Amarelo/Dourado de Destaque */
+      --accent-color: #0077b6;      /* Azul Claro */
+      --text-color: #2b2d42;        /* Texto Escuro */
+      --bg-light: #f8f9fa;          /* Fundo Claro */
+      --bg-white: #ffffff;          /* Fundo Branco */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+
+    /* Cabeçalho / Navbar */
+    header {
+      background-color: var(--primary-color);
+      color: var(--bg-white);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo span {
+      color: var(--secondary-color);
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 20px;
+    }
+
+    nav a {
+      color: var(--bg-white);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--secondary-color);
+    }
+
+    /* Seção Principal (Hero) */
+    .hero {
+      background: linear-gradient(rgba(13, 59, 102, 0.85), rgba(13, 59, 102, 0.85)), 
+                  url('https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+      color: var(--bg-white);
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+      color: #e0e0e0;
+    }
+
+    .btn {
+      display: inline-block;
+      background-color: var(--secondary-color);
+      color: var(--primary-color);
+      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .btn:hover {
+      background-color: #e0c24c;
+      transform: translateY(-2px);
+    }
+
+    /* Layout Principal em Conteúdo e Lateral */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+    }
+
+    /* Seção Sobre / Prefeito */
+    .prefeito-card {
+      background: var(--bg-white);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+
+    .prefeito-info {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .prefeito-img {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--primary-color);
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 0.5rem;
+    }
+
+    /* Serviços e Atribuições */
+    .servicos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .servico-card {
+      background: var(--bg-white);
+      padding: 1.5rem;
+      border-radius: 6px;
+      border-left: 4px solid var(--accent-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .servico-card h4 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Barra Lateral (Sidebar) */
+    .sidebar-widget {
+      background: var(--bg-white);
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .agenda-list {
+      list-style: none;
+    }
+
+    .agenda-item {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .agenda-item:last-child {
+      border-bottom: none;
+    }
+
+    .agenda-data {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--accent-color);
+      display: block;
+    }
+
+    /* Rodapé */
+    footer {
+      background-color: var(--primary-color);
+      color: var(--bg-white);
+      text-align: center;
+      padding: 2rem 1rem;
+      margin-top: 3rem;
+    }
+
+    footer p {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .prefeito-info {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cabeçalho -->
+  <header>
+    <div class="nav-container">
+      <div class="logo">
+        🏛️ Prefeitura Municipal de Nova Olinda - Ceará <span>| Gabinete</span>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#sobre">O Prefeito</a></li>
+          <li><a href="#atribuicoes">Atribuições</a></li>
+          <li><a href="#agenda">Agenda</a></li>
+          <li><a href="#contato">Atendimento</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Banner de Destaque -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Gabinete do Prefeito</h1>
+      <p>Trabalhando com transparência, inovação e compromisso com a nossa cidade e população.</p>
+      <a href="#contato" class="btn">Solicitar Audiência</a>
+    </div>
+  </section>
+
+  <!-- Conteúdo Principal -->
+  <main class="container">
+    
+    <!-- Coluna Esquerda -->
+    <div class="main-content">
+      
+      <!-- Cartão do Prefeito -->
+      <section id="sobre" class="prefeito-card">
+        <div class="prefeito-info">
+          <img src="https://novaolinda.ce.gov.br/wp-content/uploads/2025/10/Foto-Leo-site.png" alt="Foto do Prefeito" class="prefeito-img">
+          <div>
+            <h2>Leonardo Brito</h2>
+            <p><strong>Prefeito Municipal</strong></p>
+            <p>Gestão 2025 - 2028</p>
+          </div>
+        </div>
+        <p>O Gabinete do Prefeito é o órgão de assistência direta e imediata ao Chefe do Poder Executivo, responsável por coordenar a representação política, social e administrativa do município, garantindo o diálogo contínuo entre os cidadãos e a administração pública.</p>
+      </section>
+
+      <!-- Atribuições do Gabinete -->
+      <section id="atribuicoes">
+        <h3 class="section-title">Principais Serviços e Atribuições</h3>
+        <div class="servicos-grid">
+          <div class="servico-card">
+            <h4>Atendimento ao Cidadão</h4>
+            <p>Recepção e triagem de solicitações e demandas diretamente encaminhadas ao prefeito.</p>
+          </div>
+          <div class="servico-card">
+            <h4>Relações Institucionais</h4>
+            <p>Articulação com câmaras municipais, órgãos estaduais, federais e entidades civis.</p>
+          </div>
+          <div class="servico-card">
+            <h4>Atos Oficiais</h4>
+            <p>Preparação, análise e publicação de decretos, portarias e projetos de lei municipais.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Coluna Direita (Sidebar) -->
+    <aside class="sidebar">
+      
+      <!-- Agenda Oficial -->
+      <div id="agenda" class="sidebar-widget">
+        <h3 class="section-title">Agenda Oficial</h3>
+        <ul class="agenda-list">
+          <li class="agenda-item">
+            <span class="agenda-data">Hoje - 09:00</span>
+            Reunião com o Secretariado de Obras e Planejamento.
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-data">Amanhã - 14:30</span>
+            Assinatura do decreto de incentivo à tecnologia municipal.
+          </li>
+          <li class="agenda-item">
+            <span class="agenda-data">Sexta-feira - 10:00</span>
+            Audiência pública com representantes comunitários.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contato e Atendimento -->
+      <div id="contato" class="sidebar-widget">
+        <h3 class="section-title">Contato do Gabinete</h3>
+        <p><strong>Endereço:</strong> Avenida Perimetral Sul, nº S/N - Centro</p>
+        <p><strong>Telefone:</strong> (11) 3456-7890</p>
+        <p><strong>E-mail:</strong> gabinete@novaolinda.ce.gov.br</p>
+        <p><strong>Horário:</strong> Segunda a Sexta, das 08h às 14h</p>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- Rodapé -->
+  <footer>
+    <p>&copy; 2026 Prefeitura Municipal. Todos os direitos reservados.</p>
+    <p>Gabinete do Prefeito - Transparência e Responsabilidade</p>
+  </footer>
+
+</body>
+</html>
