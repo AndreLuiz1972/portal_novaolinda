@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabela de Licitações</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; }
+
+    /* --- BARRA AZUL TOPO --- */
+    .top-bar {
+      background-color: #24126a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 30px;
+      font-size: 15px;
+    }
+
+    .top-bar .left-links { display: flex; gap: 25px; flex-basis: 33.33%; }
+
+    .datetime-center {
+      color: #fff;
+      font-weight: bold;
+      text-align: left;
+      flex-basis: 33.33%;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    .top-bar .right-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-basis: 33.33%; 
+      justify-content: flex-end;
+    }
+
+    .top-bar a { color: #fff; text-decoration: none; transition: color 0.3s ease; }
+    .top-bar a i { margin-right: 3px; }
+    .top-bar .social-icons { display: flex; gap: 20px; }
+    .top-bar .social-icons a { color: #fff; font-size: 16px; }
+
+    /* --- BANNER --- */
+    .banner-container { position: relative; width: 100%; }
+    .banner-container img.banner { width: 100%; display: block; }
+    .banner-container img.logo-overlay {
+      position: absolute;
+      top: 50%;
+      left: 30px;
+      transform: translateY(-50%);
+      width: 267px; 
+      height: auto;
+    }
+
+    /* --- MENU AMARELO STICKY --- */
+    nav {
+      background-color: #d1c800;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 20px;
+      position: sticky; 
+      top: 0;           
+      width: 100%;      
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+
+    .home-icon { font-size: 22px; margin-right: 15px; color: white; text-decoration: none; }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+
+    nav ul li { position: relative; margin: 0 5px; }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 12px;
+      display: block;
+    }
+
+    nav ul li a:hover { background-color: rgba(255,255,255,0.2); border-radius: 5px; }
+
+    /* SUBMENU COM ROLAGEM */
+    nav ul li ul {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: #aea723;
+      display: none;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      min-width: 380px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 1000;
+      max-height: 450px;
+      overflow-y: auto; 
+      border-radius: 0 0 5px 5px;
+    }
+
+    nav ul li:hover ul { display: block; }
+    nav ul li ul li { margin: 0; width: 100%; }
+    nav ul li ul li a { padding: 10px; font-weight: normal; }
+    nav ul li ul li a:hover { background-color: rgba(0,0,0,0.1); }
+    nav ul li.dropdown > a::after { content: " ▼"; font-size: 12px; }
+
+    /* --- CAMPO DE PESQUISA DO MENU --- */
+    .search-li { margin-left: 15px; }
+    .search-container-form {
+      display: flex;
+      align-items: center;
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 2px 12px;
+      border: 1px solid #ccc;
+    }
+    .search-input { border: none; padding: 6px; outline: none; font-size: 14px; width: 140px; transition: width 0.3s; }
+    .search-input:focus { width: 180px; }
+    .search-btn { background: none; border: none; cursor: pointer; color: #24126a; padding: 0; display: flex; align-items: center; }
+
+    .menu-toggle { display: none; font-size: 28px; color: white; cursor: pointer; background: none; border: none; }
+
+    /* --- CONTEÚDO PRINCIPAL (TABELA DE LICITAÇÕES) --- */
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      box-sizing: border-box;
+    }
+
+    .container h1 {
+      color: #1a365d;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    /* BARRA DE PESQUISA DA TABELA */
+    .table-search-box {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .table-search-box label {
+      font-weight: bold;
+      color: #4a5568;
+    }
+
+    .table-search-box input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 2px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .table-search-box input:focus {
+      border-color: #3182ce;
+    }
+
+    /* ESTILOS DA TABELA DE LICITAÇÕES */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    th {
+      background-color: #2b6cb0;
+      color: white;
+      text-align: left;
+      padding: 12px 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f7fafc;
+    }
+
+    tr:hover {
+      background-color: #edf2f7;
+    }
+
+    /* ESTILOS DE COLUNAS */
+    .col-licitacao { font-weight: bold; white-space: nowrap; }
+    .col-licitacao a {
+      color: #2b6cb0;
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+    .col-licitacao a:hover {
+      color: #1a365d;
+    }
+
+    .col-objeto { min-width: 350px; text-align: justify; }
+    .col-data { text-align: center; white-space: nowrap; }
+    .col-reabertura { text-align: center; white-space: nowrap; color: #c53030; font-weight: 600; }
+    .col-valor { text-align: right; font-weight: bold; color: #276749; white-space: nowrap; }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #718096;
+      font-style: italic;
+    }
+
+    /* --- ESTILOS DA PAGINAÇÃO --- */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .pagination-container button {
+      background-color: #ffffff;
+      color: #2b6cb0;
+      border: 1px solid #cbd5e0;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .pagination-container button:hover:not(:disabled) {
+      background-color: #2b6cb0;
+      color: #ffffff;
+      border-color: #2b6cb0;
+    }
+
+    .pagination-container button.active {
+      background-color: #24126a;
+      color: #ffffff;
+      border-color: #24126a;
+    }
+
+    .pagination-container button:disabled {
+      color: #a0aec0;
+      border-color: #e2e8f0;
+      cursor: not-allowed;
+      background-color: #f7fafc;
+    }
+
+    /* RESPONSIVIDADE (SMARTPHONES) */
+    @media (max-width: 768px) {
+      .top-bar { 
+        flex-direction: column; 
+        gap: 15px; 
+        padding: 15px 20px;
+        text-align: center;
+      }
+      .datetime-center { display: none; }
+      .top-bar .left-links { flex-basis: auto; width: 100%; justify-content: center; }
+      
+      .top-bar .right-section { 
+        flex-basis: auto; 
+        width: 100%; 
+        flex-direction: column; 
+        gap: 15px; 
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .top-bar .right-section .links {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        width: 100%;
+      }
+      
+      .top-bar .social-icons {
+        justify-content: center;
+        width: 100%;
+        margin-top: 5px;
+      }
+
+      .banner-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 10px;
+        box-sizing: border-box;
+      }
+      .banner-container img.banner {
+        display: none; 
+      }
+      .banner-container img.logo-overlay {
+        position: static; 
+        transform: none;  
+        margin: 0 auto;
+        max-width: 85%;   
+        width: 240px;     
+      }
+
+      nav { flex-direction: column; }
+      .menu-toggle { display: block; order: 2; }
+      .home-icon { order: 1; margin-bottom: 10px; }
+      nav ul { order: 3; flex-direction: column; display: none; width: 100%; text-align: center; }
+      nav ul.show { display: flex; }
+      nav ul li ul { position: static; min-width: 100%; max-height: none; overflow: visible; box-shadow: none; }
+      .search-li { margin: 15px 0; }
+      .search-container-form { width: 220px; margin: 0 auto; }
+
+      .container {
+        margin: 15px auto;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TABELA DE LICITAÇÕES -->
+  <div class="container">
+    <h1>Licitações</h1>
+
+    <!-- BARRA DE PESQUISA NA PÁGINA -->
+    <div class="table-search-box">
+      <label for="searchInput">Procurar na página:</label>
+      <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Digite para buscar por licitação, objeto, valor ou data...">
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-responsive">
+      <table id="licitacoesTable">
+        <thead>
+          <tr>
+            <th>Licitação</th>
+            <th>Objeto</th>
+            <th>Data de Publicação</th>
+            <th>Data de Abertura</th>
+            <th>Reabertura</th>
+            <th>Valor Estimado (R$)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/276028/licit/190704" target="_blank">2026101401CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DOS SERVIÇOS DE CONSTRUÇÃO DE FEIRA AGROPECUÁRIA NO SÍTIO BAIXIO DO JEREMIAS, ZONA RURAL, NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">19/10/2026</td>
+            <td class="col-data">06/11/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.938.863,63</td>
+          </tr> 
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/274576/licit/189957" target="_blank">2026090801PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL DE HIDROGINÁSTICA E FISIOTERAPIA PARA A ACADEMIA DE SAÚDE, DE RESPONSABILIDADE DA SECRETARIA MUNICIPAL DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE..</td>
+            <td class="col-data">15/09/2026</td>
+            <td class="col-data">30/09/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">107.912.57</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/274594/licit/189964" target="_blank">2026090901PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA NA PRESTAÇÃO DE SERVIÇOS DE LOCAÇÃO DE GERADOR DE ENERGIA ELÉTRICA, COM POTÊNCIA MÍNIMA DE 180 KVA E ATS (CHAVE DE TRANSFERÊNCIA AUTOMÁTICA) PADRÃO, PARA ATENDER ÀS NECESSIDADES DO HOSPITAL DE PEQUENO PORTE ANA ALENCAR ALVES, UNIDADE DA SECRETARIA MUNICIPAL DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE..</td>
+            <td class="col-data">14/09/2026</td>
+            <td class="col-data">29/09/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">145.599,96</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="#" target="_blank">2026083101SRP</a></td>
+            <td class="col-objeto">REGISTRO DE PREÇOS PARA FUTURA E EVENTUAL AQUISIÇÃO DE KITS HIGIÊNICOS, MASCULINO E FEMININO, PARA DISTRIBUIÇÃO AOS ALUNOS DA REDE MUNICIPAL DE EDUCAÇÃO DO MUNICÍPIO DE NOVA OLINDA/CE..</td>
+            <td class="col-data">08/09/2026</td>
+            <td class="col-data">22/09/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">449.064,96</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/274344/licit/189840" target="_blank">2026081201SRP</a></td>
+            <td class="col-objeto">REGISTRO DE PREÇOS PARA A FUTURA E EVENTUAL AQUISIÇÃO DE FARDAMENTO E KITS ESCOLARES PARA ATENDER AS NECESSIDADES DA SECRETARIA DE EDUCAÇÃO BÁSICA DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">21/09/2026</td>
+            <td class="col-data">08/09/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">4.787.826,56</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/270533/licit/187936" target="_blank">2026010801PE</a></td>
+            <td class="col-objeto">Aquisição de protetores solares para atender as necessidades da Secretaria de Saúde do Município de Nova Olinda/CE</td>
+            <td class="col-data">30/06/2026</td>
+            <td class="col-data">16/06/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">97.304,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/270556/licit/187952" target="_blank">2026010802PE</a></td>
+            <td class="col-objeto">Aquisição de fraldas descartáveis infantis e geriátricas, absorventes geriátricos descartáveis, roupas íntimas para incontinência e lençol absorvente infantil descartável, para atender às necessidades da Secretaria Municipal de Saúde do Município de Nova Olinda/CE</td>
+            <td class="col-data">29/06/2026</td>
+            <td class="col-data">16/06/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">533.912,80</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/270527/licit/187931" target="_blank">2026060802PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA EM AGENCIAMENTO, RESERVA, EMISSÃO, REMARCAÇÃO E CANCELAMENTO DE PASSAGENS AÉREAS E TERRESTRES NACIONAIS, PARA DISTRIBUIÇÃO GRATUITA AOS USUÁRIOS DOS SERVIÇOS DE SAÚDE QUE PRECISEM SE DESLOCAR PARA OUTRAS CIDADES, CONFORME DEMANDA DA SECRETARIA MUNICIPAL DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">26/06/2026</td>
+            <td class="col-data">16/06/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">130.400,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/270552/licit/187950" target="_blank">2026060901CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DOS SERVIÇOS DE MANUTENÇÃO, CONSERVAÇÃO E MELHORIA DO SISTEMA VIÁRIO URBANO E RURAL, EM DIVERSAS VIAS URBANAS E RURAIS, NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">26/06/2026</td>
+            <td class="col-data">12/06/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.243.940,23</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/270041/licit/187655" target="_blank">2026060801CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DOS SERVIÇOS DE CONSTRUÇÃO DE PASSAGENS MOLHADAS EM DIVERSAS LOCALIDADES DA ZONA RURAL, NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">25/06/2026</td>
+            <td class="col-data">10/06/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">565.206,71</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/267872/licit/186544" target="_blank">2026042801PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE GÊNEROS ALIMENTÍCIOS PARA COMPOSIÇÃO DA MERENDA ESCOLAR PARA ATENDER AS NECESSIDADES DA SECRETARIA DE EDUCAÇÃO DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">18/05/2026</td>
+            <td class="col-data">30/04/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">3.902.246,87</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/266460/licit/185819" target="_blank">2026021102PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL DE CONSUMO (MATERIAL DE LIMPEZA) PARA SUPRIR AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">17/04/2026</td>
+            <td class="col-data">01/04/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.323.933,10</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="https://municipios-licitacoes.tce.ce.gov.br/index.php/licitacao/detalhes/proc/266369/licit/185779" target="_blank">2026030301SRP</a></td>
+            <td class="col-objeto">REGISTRO DE PREÇOS VISANDO A AQUISIÇÃO DE GÊNEROS ALIMENTÍCIOS PARA ATENDER AS NECESSIDADES DO HOSPITAL MUNICIPAL E DA SECRETARIA DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">15/04/2026</td>
+            <td class="col-data">30/03/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">993.162,88</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2026022001PP</a></td>
+            <td class="col-objeto">Contratação de pessoa jurídica para prestação de serviços especializados de assessoria e consultoria ao setor público destinados ao fortalecimento da governança, da integridade e do compliance e à melhoria e otimização dos processos e serviços da Secretaria Municipal de Educação do Município de Nova Olinda/CE.</td>
+            <td class="col-data">26/03/2026</td>
+            <td class="col-data">09/03/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">232.000,08</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2026021903PE2</a></td>
+            <td class="col-objeto">Aquisição de materiais didáticos e pedagógicos impressos para a rede municipal de ensino de Nova Olinda/CE.</td>
+            <td class="col-data">20/03/2026</td>
+            <td class="col-data">10/03/2026</td>
+            <td class="col-reabertura">06/05/2026</td>
+            <td class="col-valor">2.876.003,09</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2026021101PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL DE CONSUMO (MATERIAL DE EXPEDIENTE) PARA SUPRIR AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">16/03/2026</td>
+            <td class="col-data">26/02/2026</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.971.396,87</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2026020501CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE PESSOA JURÍDICA ESPECIALIZADA PARA EXECUÇÃO DE OBRA DE PAVIMENTAÇÃO ASFÁLTICA NAS DIVERSAS RUAS NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">09/03/2026</td>
+            <td class="col-data">18/02/2026</td>
+            <td class="col-reabertura">07/04/2026</td>
+            <td class="col-valor">3.886.441,23</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025121601PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE PESSOA JURÍDICA ESPECIALIZADA NA ELABORAÇÃO E EXECUÇÃO DE PROJETOS EDUCACIONAIS PARA PRESTAÇÃO DE SERVIÇOS JUNTO AO PROJETO INTEGRA NOVA OLINDA, DA SECRETARIA MUNICIPAL DE EDUCAÇÃO BÁSICA DE NOVA OLINDA/CE.</td>
+            <td class="col-data">13/01/2026</td>
+            <td class="col-data">24/12/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">977.042,61</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025120201PE</a></td>
+            <td class="col-objeto">REGISTRO DE PREÇOS PARA FUTURA E EVENTUAL AQUISIÇÕES DE MATERIAL PERMANENTE PARA ATENDER AS NECESSIDADES DA SECRETARIA DE EDUCAÇÃO BÁSICA DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">29/12/2025</td>
+            <td class="col-data">11/12/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">3.966.687,92</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025120301PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA(S) PARA LOCAÇÃO DE MÁQUINAS E VEÍCULOS OPERACIONAIS, COM OPERADOR/MOTORISTA, COM MANUTENÇÃO E MATERIAIS DE DESGASTE POR CONTA DA CONTRATADA E COMBUSTÍVEL POR CONTA DA CONTRATANTE, PARA ATENDER ÀS NECESSIDADES DA SECRETARIA DE URBANISMO E OBRAS, DA SECRETARIA DE SERVIÇOS PÚBLICOS E DA SECRETARIA DE DESENVOLVIMENTO RURAL DO MUNICÍPIO DE NOVA OLINDA/CE</td>
+            <td class="col-data">23/12/2025</td>
+            <td class="col-data">10/12/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">4.027.900,36</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025110701CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DE OBRA DE CONSTRUÇÃO DE UM CENTRO DE ATENÇÃO PSICOSSOCIAL - CAPS TIPO I NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">17/12/2025</td>
+            <td class="col-data">02/12/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">2.607.067,45</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025100601PP</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO DE SERVIÇOS DE ACESSO À INTERNET E DE TELEFONIA VIA VOIP, COMPREENDENDO LINHAS VOIP NORMAIS E LINHAS VOIP COM RAMAL, COM INSTALAÇÃO, SUPORTE TÉCNICO E MANUTENÇÃO, PELO PERÍODO DE 12 (DOZE) MESES, PARA ATENDER ÀS NECESSIDADES DAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">28/11/2025</td>
+            <td class="col-data">17/11/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">279.750,48</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025102001PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE SERVIÇOS TÉCNICOS DE COMUNICAÇÃO INSTITUCIONAL E COBERTURA DE EVENTOS, COMPREENDENDO A PRODUÇÃO GRÁFICA E AUDIOVISUAL, GESTÃO DE MÍDIAS DIGITAIS, LOCUÇÃO, SONORIZAÇÃO E DIVULGAÇÃO, PARA ATENDER ÀS NECESSIDADES DA PREFEITURA MUNICIPAL DE NOVA OLINDA-CE.</td>
+            <td class="col-data">18/11/2025</td>
+            <td class="col-data">06/11/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">804.410,66</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025101401CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DOS SERVIÇOS DE PAVIMENTAÇÃO EM PARALELEPÍPEDO EM DIVERSAS RUAS DO BAIRRO CAJUEIRO, NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">03/11/2025</td>
+            <td class="col-data">16/10/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">456.083,15</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">20250930001CE</a></td>
+            <td class="col-objeto">CONCESSÃO DE USO E EXPLORAÇÃO PARA OPERAÇÃO, MANUTENÇÃO, MODERNIZAÇÃO E GESTÃO DO ABATEDOURO DO MUNICÍPIO DE NOVA OLINDA/CE, INCLUINDO INVESTIMENTOS OBRIGATÓRIOS EM INFRAESTRUTURA, EQUIPAMENTOS E CONDIÇÕES SANITÁRIAS, PELO O PRAZO DE 30 ANOS, CONFORME DETALHAMENTOS CONSTANTES NESTE EDITAL E ANEXOS.</td>
+            <td class="col-data">16/10/2025</td>
+            <td class="col-data">01/10/2025</td>
+            <td class="col-reabertura">11/11/2025</td>
+            <td class="col-valor">19.772.400,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025080802CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA A EXECUÇÃO DA OBRA DE REFORMA E AMPLIAÇÃO DA ESCOLA DE ENSINO FUNDAMENTAL ANA FERREIRA DO NASCIMENTO (REFORMA TIPO 1), NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">28/08/2025</td>
+            <td class="col-data">14/08/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.471.360,84</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025070701PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO DE SERVIÇOS CONTÍNUOS DE MANUTENÇÃO PREVENTIVA E CORRETIVA, COM FORNECIMENTO DE PEÇAS, COMPONENTES E ACESSÓRIOS, NOS EQUIPAMENTOS MÉDICOS - HOSPITALARES E ODONTOLÓGICOS PERTENCENTES À SECRETARIA MUNICIPAL DE SAÚDE DE NOVA OLINDA/CE.</td>
+            <td class="col-data">21/08/2025</td>
+            <td class="col-data">07/08/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">313.732,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025070702CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA A EXECUÇÃO DA OBRA DE REFORMA E AMPLIAÇÃO DA ESCOLA DE ENSINO FUNDAMENTAL PADRE CRISTIANO COELHO (REFORMA TIPO 1), NO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">05/08/2025</td>
+            <td class="col-data">22/07/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">2.419.943,11</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025062701PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DE SERVIÇOS DE MANUTENÇÃO CORRETIVA E PREVENTIVA, MODERNIZAÇÃO, AMPLIAÇÃO E GESTÃO DO SISTEMA DE ILUMINAÇÃO PÚBLICA DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">22/07/2025</td>
+            <td class="col-data">08/07/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">2.043.491,16</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025061701CP</a></td>
+            <td class="col-objeto">Contratação de empresa especializada em engenharia para execução, sob o regime de empreitada por preço global, dos serviços de reforma de imóvel para funcionamento de Posto de Saúde, localizado na Serra do Zabelê, no município de Nova Olinda/CE.</td>
+            <td class="col-data">09/07/2025</td>
+            <td class="col-data">24/06/2025</td>
+            <td class="col-reabertura">07/08/2025</td>
+            <td class="col-valor">125.400,83</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025060901CE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA A EXECUÇÃO DA OBRA DE CONSTRUÇÃO DE ESCOLA DE TEMPO INTEGRAL, COMPOSTA POR 13 (TREZE) SALAS DE AULA, NO BAIRRO TERREIRO DURO, MUNICÍPIO DE NOVA OLINDA/CE, CONFORME PROJETO PADRONIZADO DO FUNDO NACIONAL DE DESENVOLVIMENTO DA EDUCAÇÃO (FNDE).</td>
+            <td class="col-data">08/07/2025</td>
+            <td class="col-data">19/06/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">12.057.995,32</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025050201PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA NA PRESTAÇÃO DE SERVIÇOS TÉCNICOS DE CONSULTORIA TRIBUTÁRIA PARA ELABORAÇÃO DO DIAGNÓSTICO DA SITUAÇÃO FINANCEIRA ATUAL E ACOMPANHAMENTO DA EXECUÇÃO DAS ATIVIDADES IMPLANTADAS PARA INCREMENTO DE RECEITA JUNTO AO SETOR DE ARRECADAÇÃO DA SECRETARIA DE FINANÇAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">20/05/2025</td>
+            <td class="col-data">06/05/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">103.800,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025032101CP</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA EXECUÇÃO DA OBRA DE PAVIMENTAÇÃO EM DIVERSAS RUAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">11/04/2025</td>
+            <td class="col-data">28/03/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">442.747,26</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025022001PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA NA PRESTAÇÃO DE SERVIÇOS DE LOCAÇÃO DE VEÍCULOS PARA ATENDER AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">20/03/2025</td>
+            <td class="col-data">28/02/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.928.043,32</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2025010801PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA REALIZAÇÃO E ORGANIZAÇÃO DA JORNADA DE PLANEJAMENTO E FORMAÇÃO PEDAGÓGICA 2025, ATENDENDO AS NECESSIDADES DA SECRETARIA DE EDUCAÇÃO BÁSICA DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">27/01/2025</td>
+            <td class="col-data">13/01/2025</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">390.984,62</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024120501PE</a></td>
+            <td class="col-objeto">Contratação de pessoa jurídica para assessorar o município na gestão, elaboração de auditorias e laudos técnicos, mediante a conferência das faturas de energia elétrica da administração direta e indireta do município, elaboração de memorial de cálculo de consumo e potência do parque de iluminação pública, a verificação do modelo tarifário aplicado em cada unidade consumidora, assim como verificação de possíveis isenções indevidas e/ou não repasse da Contribuição de Iluminação Pública (CIP)</td>
+            <td class="col-data">08/01/2025</td>
+            <td class="col-data">20/12/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">417.451,27</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024120502PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE PRESTAÇÃO DE SERVIÇOS DE IMPRESSOS GRÁFICOS PARA ATENDER AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">06/01/2025</td>
+            <td class="col-data">18/12/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">569.225,14</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024120602PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE GÊNEROS ALIMENTÍCIOS PARA ATENDER AS NECESSIDADES DO HOSPITAL MUNICIPAL E DA SECRETARIA DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">30/12/2024</td>
+            <td class="col-data">13/12/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">496.520,50</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024120601PE</a></td>
+            <td class="col-objeto">Contratação de pessoa jurídica para fornecimento de combustíveis para atender as necessidades das Diversas Secretarias do Município de Nova Olinda - CE</td>
+            <td class="col-data">27/12/2024</td>
+            <td class="col-data">12/12/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">3.038.462,68</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024110801PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA PARA PRESTAR SERVIÇOS ESPECIALIZADOS DE MANUTENÇÃO PREVENTIVA E CORRETIVA, COM A REPOSIÇÃO DE PEÇAS, DE MÁQUINAS PESADAS, PARA ATENDER AS NECESSIDADES DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">02/12/2024</td>
+            <td class="col-data">13/11/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.516.800,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024101701PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DOS SERVIÇOS DE MANUTENÇÃO PREVENTIVA E CORRETIVA, BEM COMO FORNECIMENTO DE PEÇAS DA FROTA DE VEÍCULOS DOS ÓRGÃOS E ENTIDADES DO PODER EXECUTIVO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">07/11/2024</td>
+            <td class="col-data">23/10/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">2.584.127,04</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024080501PE</a></td>
+            <td class="col-objeto">Contratação de empresa para prestação de serviços de coffee break, refeições e lanches destinados as diversas secretarias do Município de Nova Olinda/CE.</td>
+            <td class="col-data">20/09/2024</td>
+            <td class="col-data">04/09/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">327.505,90</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024050801PE</a></td>
+            <td class="col-objeto">Contratação de empresa prestadora de serviços técnicos especializados para executar serviços de preparação de documentos, elaboração de estatutos e declarações acessórias, para atender as necessidades da Secretaria Municipal de Assistência e da Secretaria Municipal de Educação BÁSICA do Município de Nova Olinda/CE.</td>
+            <td class="col-data">02/08/2024</td>
+            <td class="col-data">18/07/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">83.476,80</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024070103PE</a></td>
+            <td class="col-objeto">Aquisições de materiais didáticos da língua inglesa para alunos da rede municipal de ensino de Nova Olinda/CE, incluído formação e assessoria pedagógica contínua voltada ao corpo docente, para atender as necessidades da Secretaria de Educação BÁSICA de Nova Olinda/CE</td>
+            <td class="col-data">19/07/2024</td>
+            <td class="col-data">04/07/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.606.837,19</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024061201PE</a></td>
+            <td class="col-objeto">Aquisição de tablets para as escolas municipais, atendendo as necessidades da Secretaria de Educação BÁSICA do Município de Nova Olinda/CE</td>
+            <td class="col-data">18/07/2024</td>
+            <td class="col-data">04/07/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">345.868,50</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024060302PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL MOBILIÁRIO PARA ATENDER AS NECESSIDADES DO NOVO CEI DA SECRETARIA DE EDUCAÇÃO BÁSICA DE NOVA OLINDA/CE.</td>
+            <td class="col-data">25/06/2024</td>
+            <td class="col-data">12/06/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.960.252,30</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024041903PE</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE EMPRESA ESPECIALIZADA EM ASSESSORIA EM FORMAÇÃO DE LÍDERES, JUNTO A SECRETARIA DE EDUCAÇÃO BÁSICA DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">05/06/2024</td>
+            <td class="col-data">17/05/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">330.600,00</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024050901PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL DE LIMPEZA E HIGIENIZAÇÃO PARA ATENDER AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">29/05/2024</td>
+            <td class="col-data">16/05/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.023.856,64</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">01/2024 CMNO</a></td>
+            <td class="col-objeto">PRESTAÇÃO DE SERVIÇOS TÉCNICOS DE EXPURGO, LIMPEZA, RECUPERAÇÃO, ORGANIZAÇÃO DE TODO ACERVO DOCUMENTAL DA CÂMARA MUNICIPAL DE NOVA OLINDA-CEARÁ, QUE SE ENCONTRAM NA SEDE DO PODER LEGISLATIVO E NO ANEXO (ARQUIVO), MODERNIZANDO AS AÇÕES E OS PROCESSOS DE TRABALHO DESENVOLVIDOS PELO LEGISLATIVO DE MODO A IMPLEMENTAR EFICIENTE E EFICAZ GESTÃO DE ARQUIVOS FÍSICOS E DIGITAIS, DOCUMENTOS E INFORMAÇÃO POR MEIO DE MODERNAS TÉCNICAS DE ARMAZENAMENTO E GERENCIAMENTO DE ARQUIVOS, REFERENTE AO PERÍODO DE 1960 À 2023, DIGITALIZAÇÃO DE 230.000 IMAGENS NO FORMATO ATÉ A4.</td>
+            <td class="col-data">03/05/2024</td>
+            <td class="col-data">23/04/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">473.522,95</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2024020701PE</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE UM VEÍCULO AUTOMOTOR, TIPO PICK-UP, PARA SUPRIR AS NECESSIDADES DA SECRETARIA DE SAÚDE DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">05/03/2024</td>
+            <td class="col-data">20/02/2024</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">125.906,67</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2023111702SRP</a></td>
+            <td class="col-objeto">Registro Formal de Preços relativos à Contratação de empresa especializada em serviços de castrações de felinos e caninos para atender as necessidades da Secretaria de Saúde do Município de Nova Olinda/CE.</td>
+            <td class="col-data">19/12/2023</td>
+            <td class="col-data">06/12/2023</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">108.159,59</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2023110601SRP</a></td>
+            <td class="col-objeto">AQUISIÇÃO DE MATERIAL DE EXPEDIENTE PARA SUPRIR AS NECESSIDADES DAS DIVERSAS SECRETARIAS DO MUNICÍPIO DE NOVA OLINDA/CE.</td>
+            <td class="col-data">27/11/2023</td>
+            <td class="col-data">13/11/2023</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">1.048.156,57</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">2023072101SRP</a></td>
+            <td class="col-objeto">Registro Formal de Preços relativos à Contratação de empresa especializada em serviços de castrações de felinos e caninos para atender as necessidades da Secretaria de Meio Ambiente do Município de Nova Olinda/CE.</td>
+            <td class="col-data">09/08/2023</td>
+            <td class="col-data">26/07/2023</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">107.836,35</td>
+          </tr>
+          <tr>
+            <td class="col-licitacao"><a href="SEU_LINK_AQUI" target="_blank">20173001001CMNO</a></td>
+            <td class="col-objeto">CONTRATAÇÃO DE PESSOA FISICA OU JURIDICA PARA PRESTAÇÃO DE SERVIÇOS DE ASSESSORIA JURIDICA, JUNTO A CAMARA MUNICIPAL DE NOVA OLINDA - CE.</td>
+            <td class="col-data">-</td>
+            <td class="col-data">-</td>
+            <td class="col-reabertura">-</td>
+            <td class="col-valor">-</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="noResults" class="no-results">Nenhum registro encontrado para o termo pesquisado.</div>
+      
+      <!-- CONTÊINER DA PAGINAÇÃO -->
+      <div id="paginationContainer" class="pagination-container"></div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Toggle menu
+    const toggleBtn = document.querySelector(".menu-toggle");
+    const navMenu = document.querySelector("nav ul");
+    const datetimeElement = document.getElementById("current-datetime");
+
+    if (toggleBtn && navMenu) {
+      toggleBtn.addEventListener("click", () => {
+        navMenu.classList.toggle("show");
+      });
+    }
+
+    // Configuração de paginação
+    const itemsPerPage = 5;
+    const maxVisibleButtons = 5; // LIMITE ESTRITO DE 5 BOTÕES NUMÉRICOS
+    let currentPage = 1;
+    let filteredRows = [];
+
+    const table = document.getElementById('licitacoesTable');
+    // Seleciona explicitamente apenas linhas 'tr' válidas diretamente no tbody
+    const allRows = Array.from(table.querySelectorAll('tbody > tr'));
+    const paginationContainer = document.getElementById('paginationContainer');
+    const noResults = document.getElementById('noResults');
+
+    function displayPage(page) {
+      currentPage = page;
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+
+      // Esconde todas as linhas do DOM
+      allRows.forEach(row => row.style.display = 'none');
+
+      // Exibe estritamente as linhas correspondentes à página ativa
+      filteredRows.slice(start, end).forEach(row => {
+        row.style.display = '';
+      });
+
+      renderPaginationControls();
+    }
+
+    function renderPaginationControls() {
+      paginationContainer.innerHTML = '';
+      const pageCount = Math.ceil(filteredRows.length / itemsPerPage);
+
+      if (pageCount <= 1) return;
+
+      // Botão Anterior
+      const prevBtn = document.createElement('button');
+      prevBtn.innerHTML = '&laquo; Anterior';
+      prevBtn.disabled = currentPage === 1;
+      prevBtn.addEventListener('click', () => displayPage(currentPage - 1));
+      paginationContainer.appendChild(prevBtn);
+
+      // Lógica rigorosa de limite de 5 páginas
+      let startPage = currentPage - Math.floor(maxVisibleButtons / 2);
+      let endPage = currentPage + Math.floor(maxVisibleButtons / 2);
+
+      if (startPage < 1) {
+        startPage = 1;
+        endPage = Math.min(pageCount, maxVisibleButtons);
+      }
+
+      if (endPage > pageCount) {
+        endPage = pageCount;
+        startPage = Math.max(1, pageCount - maxVisibleButtons + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        if (i === currentPage) btn.classList.add('active');
+        btn.addEventListener('click', () => displayPage(i));
+        paginationContainer.appendChild(btn);
+      }
+
+      // Botão Próximo
+      const nextBtn = document.createElement('button');
+      nextBtn.innerHTML = 'Próximo &raquo;';
+      nextBtn.disabled = currentPage === pageCount;
+      nextBtn.addEventListener('click', () => displayPage(currentPage + 1));
+      paginationContainer.appendChild(nextBtn);
+    }
+
+    function filterTable() {
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase().trim();
+
+      filteredRows = allRows.filter(row => {
+        const tds = row.getElementsByTagName('td');
+        for (let j = 0; j < tds.length; j++) {
+          if (tds[j]) {
+            const txtValue = tds[j].textContent || tds[j].innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+              return true;
+            }
+          }
+        }
+        return false;
+      });
+
+      if (filteredRows.length === 0) {
+        allRows.forEach(row => row.style.display = 'none');
+        noResults.style.display = 'block';
+        paginationContainer.innerHTML = '';
+      } else {
+        noResults.style.display = 'none';
+        displayPage(1);
+      }
+    }
+
+    // Inicialização da tabela
+    filteredRows = [...allRows];
+    displayPage(1);
+  </script>
+
+</body>
+</html>

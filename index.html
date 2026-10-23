@@ -52,17 +52,30 @@
 
     .iframe-container-centered {
       display: flex; 
+      flex-direction: column;
       justify-content: center; 
       align-items: center; 
       width: 100%; 
       margin: 20px 0;
+    }
+
+    /* Setor Unificado de Licitações sem espaçamentos extras */
+    .setor-licitacoes {
+      width: 100%;
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .setor-licitacoes iframe {
+      margin-bottom: 0px; /* Removido o espaço entre os dois iframes */
     }
   </style>
 </head>
 <body>
 
   <!-- Local onde o cabeçalho entra -->
- <div id="meu-cabecalho"></div> 
+  <div id="meu-cabecalho"></div> 
 
   <main>
     <iframe src="slideTopo.html" style="height:160px;" scrolling="no"></iframe>
@@ -71,23 +84,21 @@
     <!-- Onde as notícias serão inseridas -->
     <div id="container-noticias" class="grid-noticias"></div>
 
-    <!-- Unidades de Atendimento (Altura reduzida de 500px para 230px para colapsar o espaço vago) -->
+    <!-- Unidades de Atendimento -->
     <iframe src="unidades_de_atendimento.html" style="height: 230px;" scrolling="no" class="auto-height"></iframe>
 
-    <!-- LRF Fiscal (Altura reduzida de 400px para 250px) -->
+    <!-- LRF Fiscal -->
     <iframe src="lrf_fiscal.html" style="height: 250px;" scrolling="no" class="auto-height"></iframe>
     
     <div class="iframe-container-centered">
       <iframe src="categorias.html" style="max-width: 1200px; height: 400px;" scrolling="no"></iframe>
     </div>
 
-    <div class="iframe-container-centered">
-      <iframe src="avisolicitacao.html" style="max-width: 1200px; height: 1200px;" scrolling="no"></iframe>
-    </div>
-
-    <div class="iframe-container-centered">
-      <iframe src="pdf_licitacao/Portal-de-Licitacoes-_-TCE-Ceara-27-07-2026.pdf" style="max-width: 1200px; height: 1200px;"></iframe>
-    </div>
+    <!-- Setor Unificado: Ajustado a propriedade class auto-height e alturas para eliminar o espaço -->
+    <section class="setor-licitacoes">
+      <iframe src="avisolicitacao.html" style="height: 450px;" scrolling="no" class="auto-height"></iframe>
+      <iframe src="licitacao_codigo_embed.html" style="height: 800px;" class="auto-height"></iframe>
+    </section>
 
     <!-- Rodapé -->
     <iframe src="rodape.html" style="height:400px;" scrolling="no"></iframe>
@@ -132,7 +143,7 @@
     }
   </script>
 
-  <!-- Redimensionador automático opcional de IFrames locais -->
+  <!-- Redimensionador automático de IFrames locais -->
   <script>
     window.addEventListener('load', () => {
       document.querySelectorAll('iframe.auto-height').forEach(iframe => {
